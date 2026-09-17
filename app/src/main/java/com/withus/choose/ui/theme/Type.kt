@@ -6,71 +6,77 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-// We use Serif for display/philosophical verdicts (Damasio's Somatic Marker elegance)
-// and Monospace/Sans for high-precision biometric telemetry.
 val Typography = Typography(
     displayLarge = TextStyle(
         fontFamily = FontFamily.Serif,
-        fontWeight = FontWeight.Light,
-        fontSize = 36.sp,
-        lineHeight = 44.sp,
-        letterSpacing = (-0.5).sp,
+        fontWeight = FontWeight.Normal,
+        fontSize = 34.sp,
+        lineHeight = 42.sp,
+        letterSpacing = (-0.4).sp,
         color = TextPrimary
     ),
     displayMedium = TextStyle(
         fontFamily = FontFamily.Serif,
         fontWeight = FontWeight.Normal,
-        fontSize = 28.sp,
-        lineHeight = 36.sp,
-        letterSpacing = 0.sp,
+        fontSize = 26.sp,
+        lineHeight = 34.sp,
+        letterSpacing = (-0.2).sp,
         color = TextPrimary
     ),
     headlineMedium = TextStyle(
         fontFamily = FontFamily.Serif,
-        fontWeight = FontWeight.Normal,
-        fontSize = 22.sp,
+        fontWeight = FontWeight.Medium,
+        fontSize = 21.sp,
         lineHeight = 28.sp,
-        letterSpacing = 0.15.sp,
+        letterSpacing = 0.sp,
         color = TextPrimary
     ),
     titleLarge = TextStyle(
         fontFamily = FontFamily.SansSerif,
         fontWeight = FontWeight.SemiBold,
-        fontSize = 18.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp,
+        fontSize = 17.sp,
+        lineHeight = 23.sp,
+        letterSpacing = 0.2.sp,
+        color = TextPrimary
+    ),
+    titleMedium = TextStyle(
+        fontFamily = FontFamily.SansSerif,
+        fontWeight = FontWeight.Medium,
+        fontSize = 15.sp,
+        lineHeight = 21.sp,
+        letterSpacing = 0.15.sp,
         color = TextPrimary
     ),
     bodyLarge = TextStyle(
         fontFamily = FontFamily.SansSerif,
         fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.25.sp,
+        fontSize = 15.sp,
+        lineHeight = 22.sp,
+        letterSpacing = 0.15.sp,
         color = TextSecondary
     ),
     bodyMedium = TextStyle(
         fontFamily = FontFamily.SansSerif,
         fontWeight = FontWeight.Normal,
-        fontSize = 14.sp,
-        lineHeight = 20.sp,
-        letterSpacing = 0.25.sp,
+        fontSize = 13.sp,
+        lineHeight = 19.sp,
+        letterSpacing = 0.2.sp,
         color = TextSecondary
     ),
     labelLarge = TextStyle(
         fontFamily = FontFamily.SansSerif,
-        fontWeight = FontWeight.Medium,
+        fontWeight = FontWeight.SemiBold,
         fontSize = 14.sp,
         lineHeight = 20.sp,
-        letterSpacing = 1.sp,
+        letterSpacing = 0.4.sp,
         color = TextPrimary
     ),
     labelSmall = TextStyle(
         fontFamily = FontFamily.Monospace,
-        fontWeight = FontWeight.Normal,
+        fontWeight = FontWeight.Medium,
         fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp,
+        lineHeight = 15.sp,
+        letterSpacing = 0.8.sp,
         color = TextMuted
     )
 )

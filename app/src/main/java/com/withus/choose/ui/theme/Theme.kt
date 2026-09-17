@@ -11,20 +11,20 @@ import androidx.core.view.WindowCompat
 
 private val SomaticDarkColorScheme = darkColorScheme(
     primary = GoldWarm,
-    onPrimary = ObsidianBlack,
+    onPrimary = ObsidianBase,
     primaryContainer = ObsidianElevated,
     onPrimaryContainer = GoldWarm,
     secondary = ParasympatheticEmerald,
-    onSecondary = ObsidianBlack,
+    onSecondary = ObsidianBase,
     secondaryContainer = ObsidianSurface,
     onSecondaryContainer = ParasympatheticEmerald,
     tertiary = SympatheticRed,
-    onTertiary = ObsidianBlack,
-    background = ObsidianBlack,
+    onTertiary = ObsidianBase,
+    background = ObsidianBase,
     onBackground = TextPrimary,
     surface = ObsidianSurface,
     onSurface = TextPrimary,
-    surfaceVariant = ObsidianElevated,
+    surfaceVariant = ObsidianCard,
     onSurfaceVariant = TextSecondary,
     outline = ObsidianBorder
 )
@@ -36,8 +36,8 @@ fun SomaticTheme(content: @Composable () -> Unit) {
         SideEffect {
             val window = (view.context as? Activity)?.window
             window?.let {
-                it.statusBarColor = ObsidianBlack.toArgb()
-                it.navigationBarColor = ObsidianBlack.toArgb()
+                it.statusBarColor = ObsidianBase.toArgb()
+                it.navigationBarColor = ObsidianBase.toArgb()
                 val controller = WindowCompat.getInsetsController(it, view)
                 controller.isAppearanceLightStatusBars = false
                 controller.isAppearanceLightNavigationBars = false

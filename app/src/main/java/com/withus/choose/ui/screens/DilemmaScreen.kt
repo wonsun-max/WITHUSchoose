@@ -21,10 +21,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.material.icons.filled.VolumeMute
 import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.Button
@@ -49,20 +53,28 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.withus.choose.ui.SomaticViewModel
-import com.withus.choose.ui.theme.GoldSubtle
+import com.withus.choose.ui.theme.AmbientBackgroundBrush
+import com.withus.choose.ui.theme.GoldGlow
+import com.withus.choose.ui.theme.GoldLight
 import com.withus.choose.ui.theme.GoldWarm
-import com.withus.choose.ui.theme.ObsidianBlack
 import com.withus.choose.ui.theme.ObsidianBorder
 import com.withus.choose.ui.theme.ObsidianCard
+import com.withus.choose.ui.theme.ObsidianElevated
 import com.withus.choose.ui.theme.TextMuted
 import com.withus.choose.ui.theme.TextPrimary
 import com.withus.choose.ui.theme.TextSecondary
 
-private val PRESETS = listOf(
-    Pair("Accept the corporate job", "Start my own studio"),
-    Pair("Move to Chicago", "Stay in New York"),
-    Pair("Confront the issue directly", "Let it resolve naturally"),
-    Pair("Take the calculated risk", "Protect current stability")
+private data class DilemmaPreset(
+    val title: String,
+    val optionA: String,
+    val optionB: String
+)
+
+private val PRESET_LIST = listOf(
+    DilemmaPreset("💼 Career", "Accept the corporate job", "Start my own studio"),
+    DilemmaPreset("📍 Location", "Move to Chicago", "Stay in New York"),
+    DilemmaPreset("💬 Honesty", "Speak my honest feelings", "Let it pass in silence"),
+    DilemmaPreset("🌱 Growth", "Take the bold leap", "Preserve current comfort")
 )
 
 @Composable
@@ -74,212 +86,316 @@ fun DilemmaScreen(
     val optionB by viewModel.optionB.collectAsState()
     val isMuted by viewModel.audioHaptics.isMuted.collectAsState()
 
-    // Breathing pulse animation for "Consult the Body" CTA button
-    val infiniteTransition = rememberInfiniteTransition(label = "breathing")
+    // Breathing pulse animation for CTA button
+    val infiniteTransition = rememberInfiniteTransition(label = "pulseTransition")
     val pulseScale by infiniteTransition.animateFloat(
-        initialValue = 0.98f,
-        targetValue = 1.02f,
+        initialValue = 0.985f,
+        targetValue = 1.015f,
         animationSpec = infiniteRepeatable(
-            animation = tween(2200),
+            animation = tween(2400),
             repeatMode = RepeatMode.Reverse
         ),
         label = "pulseScale"
     )
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(ObsidianBlack)
-            .padding(horizontal = 24.dp, vertical = 20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween
+            .background(AmbientBackgroundBrush)
     ) {
-        // Top App Bar
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column {
-                Text(
-                    text = "WITHUS CHOOSE",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = GoldWarm,
-                    letterSpacing = 2.5.sp
-                )
-                Text(
-                    text = "The Somatic Instrument",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = TextMuted
-                )
-            }
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = { viewModel.audioHaptics.toggleMute() }) {
-                    Icon(
-                        imageVector = if (isMuted) Icons.Default.VolumeMute else Icons.Default.VolumeUp,
-                        contentDescription = if (isMuted) "Unmute" else "Mute",
-                        tint = if (isMuted) TextMuted else GoldWarm
-                    )
-                }
-                IconButton(onClick = onOpenHistory) {
-                    Icon(
-                        imageVector = Icons.Default.History,
-                        contentDescription = "Archive",
-                        tint = TextSecondary
-                    )
-                }
-            }
-        }
-
-        // Center Dilemma Section
         Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp, vertical = 20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                text = "What divides you?",
-                style = MaterialTheme.typography.displayMedium,
-                textAlign = TextAlign.Center,
-                color = TextPrimary
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "Your prefrontal cortex loops in pros & cons.\nYour autonomic nervous system already knows.",
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center,
-                color = TextSecondary,
-                lineHeight = 22.sp
-            )
-
-            Spacer(modifier = Modifier.height(28.dp))
-
-            // Option A Field
-            Text(
-                text = "OPTION A",
-                style = MaterialTheme.typography.labelSmall,
-                color = GoldWarm,
+            // Header Bar
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                letterSpacing = 1.5.sp
-            )
-            Spacer(modifier = Modifier.height(6.dp))
-            OutlinedTextField(
-                value = optionA,
-                onValueChange = { viewModel.setOptionA(it) },
-                modifier = Modifier.fillMaxWidth(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = GoldWarm,
-                    unfocusedBorderColor = ObsidianBorder,
-                    focusedContainerColor = ObsidianCard,
-                    unfocusedContainerColor = ObsidianCard,
-                    focusedTextColor = TextPrimary,
-                    unfocusedTextColor = TextPrimary
-                ),
-                shape = RoundedCornerShape(12.dp),
-                placeholder = { Text("Enter Option A", color = TextMuted) },
-                singleLine = true
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Option B Field
-            Text(
-                text = "OPTION B",
-                style = MaterialTheme.typography.labelSmall,
-                color = GoldWarm,
-                modifier = Modifier.fillMaxWidth(),
-                letterSpacing = 1.5.sp
-            )
-            Spacer(modifier = Modifier.height(6.dp))
-            OutlinedTextField(
-                value = optionB,
-                onValueChange = { viewModel.setOptionB(it) },
-                modifier = Modifier.fillMaxWidth(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = GoldWarm,
-                    unfocusedBorderColor = ObsidianBorder,
-                    focusedContainerColor = ObsidianCard,
-                    unfocusedContainerColor = ObsidianCard,
-                    focusedTextColor = TextPrimary,
-                    unfocusedTextColor = TextPrimary
-                ),
-                shape = RoundedCornerShape(12.dp),
-                placeholder = { Text("Enter Option B", color = TextMuted) },
-                singleLine = true
-            )
-
-            Spacer(modifier = Modifier.height(18.dp))
-
-            // Presets row
-            Text(
-                text = "CURATED DILEMMAS",
-                style = MaterialTheme.typography.labelSmall,
-                color = TextMuted,
-                modifier = Modifier.fillMaxWidth(),
-                letterSpacing = 1.2.sp
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            LazyRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                items(PRESETS) { (presetA, presetB) ->
-                    Box(
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(ObsidianCard)
+                        .border(1.dp, ObsidianBorder, RoundedCornerShape(20.dp))
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                ) {
+                    Text(
+                        text = "WITHUS CHOOSE",
+                        fontSize = 11.sp,
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.SemiBold,
+                        color = GoldWarm,
+                        letterSpacing = 1.6.sp
+                    )
+                }
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(
+                        onClick = { viewModel.audioHaptics.toggleMute() },
                         modifier = Modifier
-                            .clip(RoundedCornerShape(8.dp))
+                            .clip(CircleShape)
                             .background(ObsidianCard)
-                            .border(1.dp, ObsidianBorder, RoundedCornerShape(8.dp))
-                            .clickable { viewModel.applyPreset(presetA, presetB) }
-                            .padding(horizontal = 12.dp, vertical = 8.dp)
+                            .size(38.dp)
                     ) {
-                        Text(
-                            text = "${presetA.take(16)}… vs ${presetB.take(16)}…",
-                            fontSize = 11.sp,
-                            fontFamily = FontFamily.Monospace,
-                            color = TextSecondary
+                        Icon(
+                            imageVector = if (isMuted) Icons.Default.VolumeMute else Icons.Default.VolumeUp,
+                            contentDescription = if (isMuted) "Sound off" else "Sound on",
+                            tint = if (isMuted) TextMuted else GoldWarm,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(10.dp))
+
+                    IconButton(
+                        onClick = onOpenHistory,
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .background(ObsidianCard)
+                            .size(38.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.History,
+                            contentDescription = "Decisions Archive",
+                            tint = TextSecondary,
+                            modifier = Modifier.size(18.dp)
                         )
                     }
                 }
             }
-        }
 
-        // Bottom CTA Button: "Consult the Body"
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Button(
-                onClick = { viewModel.startCalibration() },
-                enabled = optionA.isNotBlank() && optionB.isNotBlank(),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-                    .scale(pulseScale),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = GoldWarm,
-                    contentColor = ObsidianBlack,
-                    disabledContainerColor = ObsidianBorder,
-                    disabledContentColor = TextMuted
-                ),
-                shape = RoundedCornerShape(16.dp)
+            Spacer(modifier = Modifier.height(28.dp))
+
+            // Hero Typography (Human & Empathetic)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = "Consult the Body",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.SemiBold,
-                    letterSpacing = 0.5.sp
+                    text = "Listen to your body.",
+                    style = MaterialTheme.typography.displayLarge,
+                    color = TextPrimary,
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Text(
+                    text = "When your mind is trapped weighing pros & cons, your autonomic nervous system already knows what you truly want.",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = TextSecondary,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 22.sp,
+                    modifier = Modifier.padding(horizontal = 8.dp)
                 )
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
-            Text(
-                text = "45-Second Biometric Protocol • Zero Sign-Up",
-                style = MaterialTheme.typography.labelSmall,
-                color = TextMuted
-            )
+            // Inputs Card with Swap Button
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Option A Card
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(18.dp))
+                        .background(ObsidianCard)
+                        .border(1.dp, ObsidianBorder, RoundedCornerShape(18.dp))
+                        .padding(16.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "FIRST PATH",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = GoldWarm,
+                            letterSpacing = 1.2.sp
+                        )
+                        if (optionA.isNotBlank()) {
+                            Text(
+                                text = "Clear",
+                                fontSize = 11.sp,
+                                color = TextMuted,
+                                modifier = Modifier.clickable { viewModel.setOptionA("") }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    OutlinedTextField(
+                        value = optionA,
+                        onValueChange = { viewModel.setOptionA(it) },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color.Transparent,
+                            unfocusedBorderColor = Color.Transparent,
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            focusedTextColor = TextPrimary,
+                            unfocusedTextColor = TextPrimary
+                        ),
+                        placeholder = { Text("e.g. Accept the corporate job", color = TextMuted) },
+                        textStyle = MaterialTheme.typography.titleMedium,
+                        singleLine = true
+                    )
+                }
+
+                // Interactive Swap Pill
+                Box(
+                    modifier = Modifier
+                        .padding(vertical = 4.dp)
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(ObsidianElevated)
+                        .border(1.dp, ObsidianBorder, CircleShape)
+                        .clickable { viewModel.swapOptions() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.SwapVert,
+                        contentDescription = "Swap options",
+                        tint = GoldWarm,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
+                // Option B Card
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(18.dp))
+                        .background(ObsidianCard)
+                        .border(1.dp, ObsidianBorder, RoundedCornerShape(18.dp))
+                        .padding(16.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "SECOND PATH",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = GoldWarm,
+                            letterSpacing = 1.2.sp
+                        )
+                        if (optionB.isNotBlank()) {
+                            Text(
+                                text = "Clear",
+                                fontSize = 11.sp,
+                                color = TextMuted,
+                                modifier = Modifier.clickable { viewModel.setOptionB("") }
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    OutlinedTextField(
+                        value = optionB,
+                        onValueChange = { viewModel.setOptionB(it) },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color.Transparent,
+                            unfocusedBorderColor = Color.Transparent,
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            focusedTextColor = TextPrimary,
+                            unfocusedTextColor = TextPrimary
+                        ),
+                        placeholder = { Text("e.g. Start my own studio", color = TextMuted) },
+                        textStyle = MaterialTheme.typography.titleMedium,
+                        singleLine = true
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Friendly Curated Presets
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = "NEED INSPIRATION?",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = TextMuted,
+                    letterSpacing = 1.2.sp
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    items(PRESET_LIST) { preset ->
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(ObsidianCard)
+                                .border(1.dp, ObsidianBorder, RoundedCornerShape(12.dp))
+                                .clickable { viewModel.applyPreset(preset.optionA, preset.optionB) }
+                                .padding(horizontal = 14.dp, vertical = 10.dp)
+                        ) {
+                            Text(
+                                text = preset.title,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = TextSecondary
+                            )
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(36.dp))
+
+            // Action CTA: "Consult the Body"
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Button(
+                    onClick = { viewModel.startCalibration() },
+                    enabled = optionA.isNotBlank() && optionB.isNotBlank(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(58.dp)
+                        .scale(pulseScale),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = GoldWarm,
+                        contentColor = Color(0xFF101015),
+                        disabledContainerColor = ObsidianCard,
+                        disabledContentColor = TextMuted
+                    ),
+                    shape = RoundedCornerShape(20.dp)
+                ) {
+                    Text(
+                        text = "Consult the Body",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 0.4.sp
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text(
+                    text = "45-second scientific reflex test • 100% on-device & private",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontSize = 12.sp,
+                    color = TextMuted
+                )
+            }
         }
     }
 }

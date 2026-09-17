@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlin.math.abs
 import kotlin.random.Random
 
 class SomaticViewModel(application: Application) : AndroidViewModel(application) {
@@ -77,7 +76,7 @@ class SomaticViewModel(application: Application) : AndroidViewModel(application)
             emptyList()
         )
 
-        // Observe heartbeat events and trigger subtle haptics
+        // Subtle haptic sync on detected heartbeat
         heartbeatObserverJob = viewModelScope.launch {
             sensorManager.heartbeatEvent.collect {
                 if (_currentScreen.value == SomaticScreen.CALIBRATION || _currentScreen.value == SomaticScreen.FLASH_TEST) {
@@ -89,6 +88,13 @@ class SomaticViewModel(application: Application) : AndroidViewModel(application)
 
     fun setOptionA(text: String) { _optionA.value = text }
     fun setOptionB(text: String) { _optionB.value = text }
+
+    fun swapOptions() {
+        val temp = _optionA.value
+        _optionA.value = _optionB.value
+        _optionB.value = temp
+        audioHaptics.triggerFlashHaptic()
+    }
 
     fun applyPreset(presetA: String, presetB: String) {
         _optionA.value = presetA
@@ -119,8 +125,8 @@ class SomaticViewModel(application: Application) : AndroidViewModel(application)
             }
             _baselineBpm.value = medianBpm
 
-            // Calibration complete -> transition smoothly to Flash Test
-            delay(500)
+            // Smooth transition to Flash Moment
+            delay(400)
             startFlashTest()
         }
     }
@@ -129,72 +135,70 @@ class SomaticViewModel(application: Application) : AndroidViewModel(application)
         _currentScreen.value = SomaticScreen.FLASH_TEST
         _flashPhase.value = FlashTestPhase.IDLE
 
-        // Start background theta binaural drone
+        // Calming ambient theta tone
         audioHaptics.startBinauralTone()
 
         activeTestJob?.cancel()
         activeTestJob = viewModelScope.launch {
-            // 1. Countdown: 3... 2... 1...
+            // 1. Gentle visual countdown: 3... 2... 1...
             _flashPhase.value = FlashTestPhase.COUNTDOWN
             for (n in 3 downTo 1) {
                 _countdownNumber.value = n
                 delay(1000)
             }
 
-            // 2. Unpredictable Silence A (800ms - 1400ms) to bypass conscious anticipation
+            // 2. Unpredictable Silence A (800ms - 1300ms) to allow raw reflex
             _flashPhase.value = FlashTestPhase.UNPREDICTABLE_SILENCE_A
-            val randomSilenceA = Random.nextLong(800, 1400)
+            val randomSilenceA = Random.nextLong(800, 1300)
             delay(randomSilenceA)
 
-            // 3. Sudden Flash Option A (500ms)
+            // 3. 0.5s Flash Option A
             _flashPhase.value = FlashTestPhase.FLASH_A
             _activeFlashText.value = _optionA.value
             audioHaptics.playFlashChime()
             audioHaptics.triggerFlashHaptic()
             delay(500)
 
-            // 4. Impulse Window A (Pitch black, 3.0 seconds acute orienting recording)
+            // 4. Impulse Window A (Pitch black, 3.0s recording)
             _flashPhase.value = FlashTestPhase.IMPULSE_A
             _activeFlashText.value = ""
             val startBpmA = sensorManager.bpm.value
             val initialTremorA = sensorManager.microTremorScore.value
 
-            // If simulated in emulator, simulate realistic somatic shift for option A
             if (sensorManager.isSimulated.value) {
-                sensorManager.simulateAutonomicShift(deltaBpm = 8, tremorDelta = 1.4f)
+                sensorManager.simulateAutonomicShift(deltaBpm = 7, tremorDelta = 1.2f)
             }
             delay(3000)
             val endBpmA = sensorManager.bpm.value
             val endTremorA = sensorManager.microTremorScore.value
 
-            // 5. 5-second Breathing Reset Pause
+            // 5. Breathing Reset Pause (5 seconds)
             _flashPhase.value = FlashTestPhase.RESET_PAUSE
             for (sec in 5 downTo 1) {
                 _resetSecondsRemaining.value = sec
                 delay(1000)
             }
 
-            // 6. Unpredictable Silence B (800ms - 1400ms)
+            // 6. Unpredictable Silence B (800ms - 1300ms)
             _flashPhase.value = FlashTestPhase.UNPREDICTABLE_SILENCE_B
-            val randomSilenceB = Random.nextLong(800, 1400)
+            val randomSilenceB = Random.nextLong(800, 1300)
             delay(randomSilenceB)
 
-            // 7. Sudden Flash Option B (500ms)
+            // 7. 0.5s Flash Option B
             _flashPhase.value = FlashTestPhase.FLASH_B
             _activeFlashText.value = _optionB.value
             audioHaptics.playFlashChime()
             audioHaptics.triggerFlashHaptic()
             delay(500)
 
-            // 8. Impulse Window B (Pitch black, 3.0 seconds acute orienting recording)
+            // 8. Impulse Window B (Pitch black, 3.0s recording)
             _flashPhase.value = FlashTestPhase.IMPULSE_B
             _activeFlashText.value = ""
             val startBpmB = sensorManager.bpm.value
             val initialTremorB = sensorManager.microTremorScore.value
 
-            // If simulated in emulator, simulate parasympathetic stabilization for option B
             if (sensorManager.isSimulated.value) {
-                sensorManager.simulateAutonomicShift(deltaBpm = -6, tremorDelta = -1.2f)
+                sensorManager.simulateAutonomicShift(deltaBpm = -5, tremorDelta = -1.0f)
             }
             delay(3000)
             val endBpmB = sensorManager.bpm.value
@@ -203,7 +207,7 @@ class SomaticViewModel(application: Application) : AndroidViewModel(application)
             _flashPhase.value = FlashTestPhase.COMPLETED
             audioHaptics.stopBinauralTone()
 
-            // Compute Somatic Verdict
+            // Compute human-friendly verdict
             computeAndDisplayVerdict(
                 startA = startBpmA, endA = endBpmA, tremorA = endTremorA - initialTremorA,
                 startB = startBpmB, endB = endBpmB, tremorB = endTremorB - initialTremorB
@@ -219,15 +223,14 @@ class SomaticViewModel(application: Application) : AndroidViewModel(application)
         val deltaA = endA - base
         val deltaB = endB - base
 
-        // Classify autonomic responses
         val reactionA = when {
-            deltaA >= 4 || tremorA > 0.8f -> AutonomicReaction.SYMPATHETIC_SPIKE
+            deltaA >= 3 || tremorA > 0.7f -> AutonomicReaction.SYMPATHETIC_SPIKE
             deltaA <= -2 -> AutonomicReaction.PARASYMPATHETIC_RELIEF
             else -> AutonomicReaction.NEUTRAL_EQUILIBRIUM
         }
 
         val reactionB = when {
-            deltaB >= 4 || tremorB > 0.8f -> AutonomicReaction.SYMPATHETIC_SPIKE
+            deltaB >= 3 || tremorB > 0.7f -> AutonomicReaction.SYMPATHETIC_SPIKE
             deltaB <= -2 -> AutonomicReaction.PARASYMPATHETIC_RELIEF
             else -> AutonomicReaction.NEUTRAL_EQUILIBRIUM
         }
@@ -252,18 +255,17 @@ class SomaticViewModel(application: Application) : AndroidViewModel(application)
             reaction = reactionB
         )
 
-        // Decision algorithm: The choice with parasympathetic stabilization or lower sympathetic resistance wins
-        val (winnerKey, winnerText, rationale) = if (deltaA < deltaB) {
+        val (winnerKey, winnerText, friendlyInsight) = if (deltaA < deltaB) {
             Triple(
                 "A",
                 _optionA.value,
-                "Option A triggered parasympathetic cardiac deceleration (${if (deltaA >= 0) "+$deltaA" else "$deltaA"} BPM) and lower neuromuscular tension, revealing subconscious somatic alignment."
+                "Your heart settled into a calm, steady rhythm when presented with \"${_optionA.value}\". Meanwhile, Option B triggered defensive physical tension."
             )
         } else {
             Triple(
                 "B",
                 _optionB.value,
-                "Option B evoked autonomic stabilization (${if (deltaB >= 0) "+$deltaB" else "$deltaB"} BPM) compared to acute sympathetic resistance recorded during Option A."
+                "Your pulse steadied with relief when presented with \"${_optionB.value}\", while Option A created subconscious resistance and an elevated pulse."
             )
         }
 
@@ -275,10 +277,9 @@ class SomaticViewModel(application: Application) : AndroidViewModel(application)
             baselineBpm = base,
             biometricsA = bioA,
             biometricsB = bioB,
-            scientificRationale = rationale
+            humanExplanation = friendlyInsight
         )
 
-        // Persist to Room Database
         val entity = VerdictEntity(
             optionA = verdictData.optionA,
             optionB = verdictData.optionB,

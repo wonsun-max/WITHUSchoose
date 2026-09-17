@@ -11,10 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -39,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.withus.choose.data.model.VerdictEntity
 import com.withus.choose.ui.theme.GoldWarm
-import com.withus.choose.ui.theme.ObsidianBlack
+import com.withus.choose.ui.theme.ObsidianBase
 import com.withus.choose.ui.theme.ObsidianBorder
 import com.withus.choose.ui.theme.ObsidianCard
 import com.withus.choose.ui.theme.ParasympatheticEmerald
@@ -65,13 +63,13 @@ fun HistorySheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = ObsidianBlack,
+        containerColor = ObsidianBase,
         dragHandle = null
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(24.dp)
+                .padding(horizontal = 24.dp, vertical = 20.dp)
         ) {
             // Header
             Row(
@@ -81,13 +79,14 @@ fun HistorySheet(
             ) {
                 Column {
                     Text(
-                        text = "SOMATIC ARCHIVE",
+                        text = "DECISIONS JOURNAL",
                         style = MaterialTheme.typography.labelSmall,
                         color = GoldWarm,
-                        letterSpacing = 2.sp
+                        letterSpacing = 1.6.sp
                     )
+                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = "Past Decision Telemetry",
+                        text = "Past Bodily Instincts",
                         style = MaterialTheme.typography.titleLarge,
                         color = TextPrimary
                     )
@@ -113,20 +112,21 @@ fun HistorySheet(
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(18.dp))
 
             if (history.isEmpty()) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp),
+                        .height(220.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "No recorded dilemmas yet.\nConsult the body to record your first somatic verdict.",
+                        text = "Your journal is quiet.\nTest your first dilemma to save your body's wisdom here.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = TextMuted,
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                        lineHeight = 22.sp
                     )
                 }
             } else {
@@ -138,11 +138,11 @@ fun HistorySheet(
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clip(RoundedCornerShape(14.dp))
-                                .border(1.dp, ObsidianBorder, RoundedCornerShape(14.dp)),
+                                .clip(RoundedCornerShape(16.dp))
+                                .border(1.dp, ObsidianBorder, RoundedCornerShape(16.dp)),
                             colors = CardDefaults.cardColors(containerColor = ObsidianCard)
                         ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
+                            Column(modifier = Modifier.padding(18.dp)) {
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -171,9 +171,9 @@ fun HistorySheet(
 
                                 Text(
                                     text = item.chosenText,
-                                    style = MaterialTheme.typography.titleLarge,
+                                    style = MaterialTheme.typography.titleMedium,
                                     color = GoldWarm,
-                                    fontWeight = FontWeight.SemiBold
+                                    fontWeight = FontWeight.Bold
                                 )
 
                                 Spacer(modifier = Modifier.height(4.dp))
@@ -192,7 +192,7 @@ fun HistorySheet(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
-                                        text = "A: ${item.optionABpm} BPM • B: ${item.optionBBpm} BPM",
+                                        text = "A: ${item.optionABpm} • B: ${item.optionBBpm} BPM",
                                         fontSize = 11.sp,
                                         fontFamily = FontFamily.Monospace,
                                         color = TextMuted
@@ -204,14 +204,19 @@ fun HistorySheet(
                                             "DISAPPOINTED" -> SympatheticRed
                                             else -> GoldWarm
                                         }
+                                        val label = when (reflection) {
+                                            "RELIEVED" -> "RELIEVED"
+                                            "DISAPPOINTED" -> "LONGED FOR OTHER"
+                                            else -> "NEUTRAL"
+                                        }
                                         Box(
                                             modifier = Modifier
-                                                .clip(RoundedCornerShape(4.dp))
+                                                .clip(RoundedCornerShape(6.dp))
                                                 .background(color.copy(alpha = 0.15f))
-                                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                                                .padding(horizontal = 8.dp, vertical = 3.dp)
                                         ) {
                                             Text(
-                                                text = reflection,
+                                                text = label,
                                                 fontSize = 10.sp,
                                                 fontWeight = FontWeight.Bold,
                                                 fontFamily = FontFamily.Monospace,

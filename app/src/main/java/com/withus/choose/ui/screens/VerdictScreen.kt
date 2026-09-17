@@ -17,14 +17,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -47,8 +46,8 @@ import androidx.compose.ui.unit.sp
 import com.withus.choose.ui.ReflectionAnswer
 import com.withus.choose.ui.SomaticViewModel
 import com.withus.choose.ui.components.TruthCardShareDialog
+import com.withus.choose.ui.theme.AmbientBackgroundBrush
 import com.withus.choose.ui.theme.GoldWarm
-import com.withus.choose.ui.theme.ObsidianBlack
 import com.withus.choose.ui.theme.ObsidianBorder
 import com.withus.choose.ui.theme.ObsidianCard
 import com.withus.choose.ui.theme.ParasympatheticEmerald
@@ -69,285 +68,311 @@ fun VerdictScreen(viewModel: SomaticViewModel) {
         )
     }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(ObsidianBlack)
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 24.dp, vertical = 24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .background(AmbientBackgroundBrush)
     ) {
-        // Header
-        Text(
-            text = "SOMATIC VERDICT",
-            style = MaterialTheme.typography.labelSmall,
-            color = GoldWarm,
-            letterSpacing = 2.5.sp
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Dominant Choice Card
-        Card(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(20.dp))
-                .border(1.5.dp, GoldWarm.copy(alpha = 0.6f), RoundedCornerShape(20.dp)),
-            colors = CardDefaults.cardColors(containerColor = ObsidianCard)
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp, vertical = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
+            // Header Pill
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(ObsidianCard)
+                    .border(1.dp, ObsidianBorder, RoundedCornerShape(20.dp))
+                    .padding(horizontal = 14.dp, vertical = 6.dp)
             ) {
                 Text(
-                    text = "Your nervous system chose:",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = TextSecondary
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Text(
-                    text = verdict.chosenText,
-                    style = MaterialTheme.typography.displayMedium,
+                    text = "THE BODY'S VERDICT",
+                    fontSize = 11.sp,
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = FontWeight.SemiBold,
                     color = GoldWarm,
-                    textAlign = TextAlign.Center
+                    letterSpacing = 1.6.sp
                 )
+            }
 
-                Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(18.dp))
 
-                Box(
+            // Dominant Choice Hero Card
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(24.dp))
+                    .border(1.dp, GoldWarm.copy(alpha = 0.5f), RoundedCornerShape(24.dp)),
+                colors = CardDefaults.cardColors(containerColor = ObsidianCard)
+            ) {
+                Column(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(ParasympatheticEmerald.copy(alpha = 0.15f))
-                        .border(1.dp, ParasympatheticEmerald.copy(alpha = 0.4f), RoundedCornerShape(8.dp))
-                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                        .fillMaxWidth()
+                        .padding(26.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "AUTONOMIC ORIENTING RELIEF",
-                        fontSize = 11.sp,
-                        fontFamily = FontFamily.Monospace,
-                        fontWeight = FontWeight.Bold,
-                        color = ParasympatheticEmerald
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Biological Data Breakdown
-        Text(
-            text = "BIOLOGICAL TELEMETRY",
-            style = MaterialTheme.typography.labelSmall,
-            color = TextMuted,
-            modifier = Modifier.fillMaxWidth(),
-            letterSpacing = 1.5.sp
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Option A Telemetry Row
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
-                .border(1.dp, ObsidianBorder, RoundedCornerShape(12.dp)),
-            colors = CardDefaults.cardColors(containerColor = ObsidianCard)
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "OPTION A: ${verdict.optionA}",
-                        style = MaterialTheme.typography.titleLarge.copy(fontSize = 15.sp),
-                        color = TextPrimary
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = verdict.biometricsA.reaction.description,
-                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
-                        color = TextSecondary
-                    )
-                }
-                Spacer(modifier = Modifier.width(12.dp))
-                Column(horizontalAlignment = Alignment.End) {
-                    Text(
-                        text = "${verdict.biometricsA.finalBpm} BPM",
-                        fontFamily = FontFamily.Monospace,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        color = if (verdict.chosenOption == "A") ParasympatheticEmerald else SympatheticRed
-                    )
-                    Text(
-                        text = "${if (verdict.biometricsA.deltaBpm >= 0) "+${verdict.biometricsA.deltaBpm}" else "${verdict.biometricsA.deltaBpm}"} BPM shift",
-                        fontSize = 11.sp,
-                        fontFamily = FontFamily.Monospace,
-                        color = TextMuted
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        // Option B Telemetry Row
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
-                .border(1.dp, ObsidianBorder, RoundedCornerShape(12.dp)),
-            colors = CardDefaults.cardColors(containerColor = ObsidianCard)
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "OPTION B: ${verdict.optionB}",
-                        style = MaterialTheme.typography.titleLarge.copy(fontSize = 15.sp),
-                        color = TextPrimary
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = verdict.biometricsB.reaction.description,
-                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
-                        color = TextSecondary
-                    )
-                }
-                Spacer(modifier = Modifier.width(12.dp))
-                Column(horizontalAlignment = Alignment.End) {
-                    Text(
-                        text = "${verdict.biometricsB.finalBpm} BPM",
-                        fontFamily = FontFamily.Monospace,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        color = if (verdict.chosenOption == "B") ParasympatheticEmerald else SympatheticRed
-                    )
-                    Text(
-                        text = "${if (verdict.biometricsB.deltaBpm >= 0) "+${verdict.biometricsB.deltaBpm}" else "${verdict.biometricsB.deltaBpm}"} BPM shift",
-                        fontSize = 11.sp,
-                        fontFamily = FontFamily.Monospace,
-                        color = TextMuted
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Secondary Reflection Check
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
-                .border(1.dp, ObsidianBorder, RoundedCornerShape(16.dp)),
-            colors = CardDefaults.cardColors(containerColor = ObsidianCard)
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "THE REFLECTION CHECK",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = GoldWarm,
-                    letterSpacing = 1.5.sp
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Did seeing this verdict make you feel relieved, or disappointed?",
-                    style = MaterialTheme.typography.titleLarge.copy(fontSize = 16.sp),
-                    textAlign = TextAlign.Center,
-                    color = TextPrimary
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                if (verdict.reflection == null) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        OutlinedButton(
-                            onClick = { viewModel.submitReflection(ReflectionAnswer.RELIEVED) },
-                            modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(10.dp),
-                            colors = ButtonDefaults.outlinedButtonColors(contentColor = ParasympatheticEmerald),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, ParasympatheticEmerald)
-                        ) {
-                            Text("Relieved", fontWeight = FontWeight.Bold)
-                        }
-
-                        OutlinedButton(
-                            onClick = { viewModel.submitReflection(ReflectionAnswer.DISAPPOINTED) },
-                            modifier = Modifier.weight(1f),
-                            shape = RoundedCornerShape(10.dp),
-                            colors = ButtonDefaults.outlinedButtonColors(contentColor = SympatheticRed),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, SympatheticRed)
-                        ) {
-                            Text("Disappointed", fontWeight = FontWeight.Bold)
-                        }
-                    }
-                } else {
-                    val reflectionText = when (verdict.reflection) {
-                        ReflectionAnswer.RELIEVED -> "✓ Verified: Relief confirms deep somatic alignment with this choice."
-                        ReflectionAnswer.DISAPPOINTED -> "⚠ Subconscious Insight: Disappointment reveals your prefrontal mind desired the opposite outcome!"
-                        ReflectionAnswer.NEUTRAL -> "Neutral balance recorded."
-                    }
-                    Text(
-                        text = reflectionText,
+                        text = "Your nervous system settled on:",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = if (verdict.reflection == ReflectionAnswer.RELIEVED) ParasympatheticEmerald else GoldWarm,
-                        textAlign = TextAlign.Center
+                        color = TextSecondary
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text(
+                        text = verdict.chosenText,
+                        style = MaterialTheme.typography.displayLarge.copy(fontSize = 28.sp),
+                        color = GoldWarm,
+                        textAlign = TextAlign.Center,
+                        lineHeight = 36.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(ParasympatheticEmerald.copy(alpha = 0.12f))
+                            .border(1.dp, ParasympatheticEmerald.copy(alpha = 0.35f), RoundedCornerShape(12.dp))
+                            .padding(horizontal = 14.dp, vertical = 6.dp)
+                    ) {
+                        Text(
+                            text = "✨ Physical Relief & Calmer Pulse",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = ParasympatheticEmerald
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    Text(
+                        text = verdict.humanExplanation,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary,
+                        textAlign = TextAlign.Center,
+                        lineHeight = 20.sp
                     )
                 }
             }
-        }
 
-        Spacer(modifier = Modifier.height(28.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-        // Actions: Share Truth Card & Test Another Dilemma
-        Button(
-            onClick = { showShareDialog = true },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(52.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = GoldWarm, contentColor = ObsidianBlack),
-            shape = RoundedCornerShape(14.dp)
-        ) {
-            Icon(imageVector = Icons.Default.Share, contentDescription = null, modifier = Modifier.size(18.dp))
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Generate Viral Truth Card", fontWeight = FontWeight.Bold)
-        }
+            // Biological Telemetry Card
+            Text(
+                text = "HOW YOUR BODY REACTED",
+                style = MaterialTheme.typography.labelSmall,
+                color = TextMuted,
+                modifier = Modifier.fillMaxWidth(),
+                letterSpacing = 1.4.sp
+            )
 
-        Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
-        OutlinedButton(
-            onClick = { viewModel.resetToDilemma() },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp),
-            shape = RoundedCornerShape(14.dp),
-            border = androidx.compose.foundation.BorderStroke(1.dp, ObsidianBorder),
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = TextSecondary)
-        ) {
-            Icon(imageVector = Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Test Another Dilemma")
+            // Option A Telemetry
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(16.dp))
+                    .border(1.dp, ObsidianBorder, RoundedCornerShape(16.dp)),
+                colors = CardDefaults.cardColors(containerColor = ObsidianCard)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(18.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Path A: ${verdict.optionA}",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = TextPrimary
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = verdict.biometricsA.reaction.displayName,
+                            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
+                            color = if (verdict.chosenOption == "A") ParasympatheticEmerald else SympatheticRed
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column(horizontalAlignment = Alignment.End) {
+                        Text(
+                            text = "${verdict.biometricsA.finalBpm} BPM",
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 17.sp,
+                            color = if (verdict.chosenOption == "A") ParasympatheticEmerald else SympatheticRed
+                        )
+                        Text(
+                            text = "${if (verdict.biometricsA.deltaBpm >= 0) "+${verdict.biometricsA.deltaBpm}" else "${verdict.biometricsA.deltaBpm}"} vs rest",
+                            fontSize = 11.sp,
+                            fontFamily = FontFamily.Monospace,
+                            color = TextMuted
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Option B Telemetry
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(16.dp))
+                    .border(1.dp, ObsidianBorder, RoundedCornerShape(16.dp)),
+                colors = CardDefaults.cardColors(containerColor = ObsidianCard)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(18.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Path B: ${verdict.optionB}",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = TextPrimary
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = verdict.biometricsB.reaction.displayName,
+                            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
+                            color = if (verdict.chosenOption == "B") ParasympatheticEmerald else SympatheticRed
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column(horizontalAlignment = Alignment.End) {
+                        Text(
+                            text = "${verdict.biometricsB.finalBpm} BPM",
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 17.sp,
+                            color = if (verdict.chosenOption == "B") ParasympatheticEmerald else SympatheticRed
+                        )
+                        Text(
+                            text = "${if (verdict.biometricsB.deltaBpm >= 0) "+${verdict.biometricsB.deltaBpm}" else "${verdict.biometricsB.deltaBpm}"} vs rest",
+                            fontSize = 11.sp,
+                            fontFamily = FontFamily.Monospace,
+                            color = TextMuted
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // The Reflection Check (Human & Empathetic)
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(20.dp))
+                    .border(1.dp, ObsidianBorder, RoundedCornerShape(20.dp)),
+                colors = CardDefaults.cardColors(containerColor = ObsidianCard)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "THE REFLECTION CHECK",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = GoldWarm,
+                        letterSpacing = 1.4.sp
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "How does seeing this verdict feel right now?",
+                        style = MaterialTheme.typography.titleMedium,
+                        textAlign = TextAlign.Center,
+                        color = TextPrimary
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    if (verdict.reflection == null) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            OutlinedButton(
+                                onClick = { viewModel.submitReflection(ReflectionAnswer.RELIEVED) },
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(12.dp),
+                                colors = ButtonDefaults.outlinedButtonColors(contentColor = ParasympatheticEmerald),
+                                border = androidx.compose.foundation.BorderStroke(1.dp, ParasympatheticEmerald.copy(alpha = 0.6f))
+                            ) {
+                                Text("😌 Relieved", fontWeight = FontWeight.Bold)
+                            }
+
+                            OutlinedButton(
+                                onClick = { viewModel.submitReflection(ReflectionAnswer.DISAPPOINTED) },
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(12.dp),
+                                colors = ButtonDefaults.outlinedButtonColors(contentColor = SympatheticRed),
+                                border = androidx.compose.foundation.BorderStroke(1.dp, SympatheticRed.copy(alpha = 0.6f))
+                            ) {
+                                Text("😟 Disappointed", fontWeight = FontWeight.Bold)
+                            }
+                        }
+                    } else {
+                        val feedback = when (verdict.reflection) {
+                            ReflectionAnswer.RELIEVED -> "✓ Your conscious mind and nervous system are in total harmony. You have your answer."
+                            ReflectionAnswer.DISAPPOINTED -> "💡 Notice that feeling: Disappointment means your heart quietly desired the other path all along!"
+                            ReflectionAnswer.NEUTRAL -> "A balanced perspective recorded."
+                        }
+                        Text(
+                            text = feedback,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = if (verdict.reflection == ReflectionAnswer.RELIEVED) ParasympatheticEmerald else GoldWarm,
+                            textAlign = TextAlign.Center,
+                            lineHeight = 20.sp
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(28.dp))
+
+            // Primary Share CTA & Reset
+            Button(
+                onClick = { showShareDialog = true },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = GoldWarm, contentColor = Color(0xFF101015)),
+                shape = RoundedCornerShape(18.dp)
+            ) {
+                Icon(imageVector = Icons.Default.Share, contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Share Truth Card", fontWeight = FontWeight.Bold)
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedButton(
+                onClick = { viewModel.resetToDilemma() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp),
+                shape = RoundedCornerShape(18.dp),
+                border = androidx.compose.foundation.BorderStroke(1.dp, ObsidianBorder),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = TextSecondary)
+            ) {
+                Icon(imageVector = Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Test Another Decision")
+            }
         }
     }
 }

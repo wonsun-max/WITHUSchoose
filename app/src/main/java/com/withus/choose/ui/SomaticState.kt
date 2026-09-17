@@ -1,7 +1,5 @@
 package com.withus.choose.ui
 
-import com.withus.choose.data.model.VerdictEntity
-
 enum class SomaticScreen {
     DILEMMA,
     CALIBRATION,
@@ -11,16 +9,16 @@ enum class SomaticScreen {
 
 enum class AutonomicReaction(val displayName: String, val description: String) {
     PARASYMPATHETIC_RELIEF(
-        "Parasympathetic Stabilization",
-        "Heart rate deceleration & rhythmic calm (biomarker of intuitive relief/acceptance)"
+        "Physical Relief & Ease",
+        "Your pulse steadied and slowed—the body's natural signature of inner peace and acceptance."
     ),
     SYMPATHETIC_SPIKE(
-        "Sympathetic Spike",
-        "Acute BPM surge & micro-tremor (biomarker of subconscious recoil/resistance)"
+        "Subconscious Tension",
+        "An acute bump in heart rate and micro-finger recoil—your nervous system bracing against resistance."
     ),
     NEUTRAL_EQUILIBRIUM(
-        "Neutral Equilibrium",
-        "Minimal autonomic fluctuation"
+        "Steady Neutral",
+        "Minimal autonomic change—neither strong attraction nor resistance."
     )
 }
 
@@ -62,6 +60,6 @@ data class SomaticVerdictData(
     val baselineBpm: Int,
     val biometricsA: OptionBiometrics,
     val biometricsB: OptionBiometrics,
-    val scientificRationale: String,
+    val humanExplanation: String,
     val reflection: ReflectionAnswer? = null
 )
