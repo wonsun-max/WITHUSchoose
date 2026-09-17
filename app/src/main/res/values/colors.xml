@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="obsidian_black">#09090C</color>
+    <color name="surface_dark">#13131A</color>
+    <color name="gold_warm">#E5A967</color>
+    <color name="gold_soft">#C98F50</color>
+    <color name="parasympathetic_emerald">#38D39F</color>
+    <color name="sympathetic_red">#FF5252</color>
+    <color name="text_primary">#F4F4F6</color>
+    <color name="text_secondary">#9E9EA8</color>
+</resources>

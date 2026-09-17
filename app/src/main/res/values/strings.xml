@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">WITHUS Choose</string>
+    <string name="app_tagline">Somatic Biometric Decision Instrument</string>
+    <string name="consult_the_body">Consult the Body</string>
+    <string name="option_a_hint">Option A (e.g. Accept corporate offer)</string>
+    <string name="option_b_hint">Option B (e.g. Launch my own venture)</string>
+    <string name="calibration_prompt">Place your right index finger gently over the rear camera and flash.</string>
+    <string name="calibration_subtext">Calibrating resting nervous system… take one slow, deep breath.</string>
+    <string name="flash_screen_prompt">Keep your finger still. Look at the center of the screen.</string>
+    <string name="somatic_verdict_title">Somatic Verdict</string>
+    <string name="camera_permission_rationale">WITHUS Choose uses the camera and LED flash to detect subtle blood pulse changes in your fingertip (Photoplethysmography) to calibrate your resting heart rate.</string>
+</resources>
